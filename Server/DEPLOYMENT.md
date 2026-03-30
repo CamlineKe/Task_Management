@@ -1,4 +1,4 @@
-# Deployment Guide: Aiven MySQL + Render Laravel
+# Deployment Guide: Aiven MySQL + Render Docker
 
 ## Architecture Overview
 
@@ -6,6 +6,7 @@
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │    Vercel       │────▶│     Render      │────▶│     Aiven       │
 │  Vue Frontend   │     │  Laravel API    │     │     MySQL       │
+│                 │     │   (Docker)      │     │                 │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
 ```
 
@@ -34,11 +35,6 @@
 - **Username:** `avnadmin`
 - **Password:** (shown once, copy and save)
 
-### Download CA Certificate:
-- Go to **Overview** tab
-- Click **Download CA Certificate**
-- Save this file - you'll need it for Render
-
 ### Your Connection String Will Look Like:
 ```
 mysql://avnadmin:YOUR_PASSWORD@mysql-xxxxx-taskmanagement1.j.aivencloud.com:xxxxx/defaultdb?ssl-mode=REQUIRED
@@ -46,38 +42,9 @@ mysql://avnadmin:YOUR_PASSWORD@mysql-xxxxx-taskmanagement1.j.aivencloud.com:xxxx
 
 ---
 
-## Step 2: Prepare .env.production File
+## Step 2: Laravel SSL Configuration
 
-Create a `.env.production` file with your Aiven credentials:
-
-```env
-# Application
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://your-app.onrender.com
-APP_KEY=your_app_key_here
-
-# Database (Aiven MySQL)
-DB_CONNECTION=mysql
-DB_HOST=mysql-xxxxx-taskmanagement1.j.aivencloud.com
-DB_PORT=xxxxx
-DB_DATABASE=defaultdb
-DB_USERNAME=avnadmin
-DB_PASSWORD=YOUR_PASSWORD
-DB_SSL_CA=/etc/ssl/certs/ca-certificates.crt
-```
-
-### Generate APP_KEY:
-```bash
-php artisan key:generate --show
-```
-Copy the output and paste as `APP_KEY` value.
-
----
-
-## Step 3: Laravel SSL Configuration
-
-**Aiven requires SSL connection.** Update `config/database.php`:
+**Aiven requires SSL connection.** The `config/database.php` already has SSL configured:
 
 ```php
 'mysql' => [
@@ -91,7 +58,50 @@ Copy the output and paste as `APP_KEY` value.
 
 ---
 
-## Step 4: Render Laravel Backend Setup
+## Step 3: Prepare Environment Variables
+
+Create a `.env.production` file with your Aiven credentials:
+
+```env
+# Application
+APP_NAME="Task Management API"
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-app.onrender.com
+APP_KEY=your_app_key_here
+
+# Logging (Docker/Render compatible)
+LOG_CHANNEL=stderr
+LOG_LEVEL=info
+
+# Database (Aiven MySQL)
+DB_CONNECTION=mysql
+DB_HOST=mysql-xxxxx-taskmanagement1.j.aivencloud.com
+DB_PORT=xxxxx
+DB_DATABASE=defaultdb
+DB_USERNAME=avnadmin
+DB_PASSWORD=YOUR_PASSWORD
+DB_SSL_CA=/etc/ssl/certs/ca-certificates.crt
+MYSQL_ATTR_SSL_CA=/etc/ssl/certs/ca-certificates.crt
+
+# Stateless container settings
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync
+FILESYSTEM_DISK=local
+
+# Frontend URL
+FRONTEND_URL=https://your-frontend-url.com
+```
+
+### Generate APP_KEY:
+```bash
+php artisan key:generate --show
+```
+Copy the output and paste as `APP_KEY` value.
+
+---
+
+## Step 4: Render Docker Deployment
 
 **No credit card required for free tier**
 
@@ -108,20 +118,23 @@ Copy the output and paste as `APP_KEY` value.
 | Setting | Value |
 |---------|-------|
 | Name | `task-management-api` |
-| Environment | **PHP** |
-| Build Command | `composer install --no-dev --optimize-autoloader` |
-| Start Command | `php artisan serve --host=0.0.0.0 --port=10000` |
+| Environment | **Docker** |
+| Dockerfile Path | `./Dockerfile` |
 | Plan | **Free** |
 
 6. **Add Environment Variables:**
 
-Paste all variables from your `.env.production` file:
+Paste all variables from your `.env.production` file in the Render dashboard under **Environment**:
 
 ```
+APP_NAME=Task Management API
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://task-management-api.onrender.com
 APP_KEY=base64:your_generated_key
+
+LOG_CHANNEL=stderr
+LOG_LEVEL=info
 
 DB_CONNECTION=mysql
 DB_HOST=mysql-xxxxx-taskmanagement1.j.aivencloud.com
@@ -130,32 +143,31 @@ DB_DATABASE=defaultdb
 DB_USERNAME=avnadmin
 DB_PASSWORD=YOUR_PASSWORD
 DB_SSL_CA=/etc/ssl/certs/ca-certificates.crt
+MYSQL_ATTR_SSL_CA=/etc/ssl/certs/ca-certificates.crt
+
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync
+FILESYSTEM_DISK=local
+
+FRONTEND_URL=https://your-frontend-url.com
 ```
 
-7. **Upload CA Certificate:**
-   - Go to Render dashboard → **Settings**
-   - Scroll to **Secret Files** → **Add File**
-   - **Path:** `/etc/ssl/certs/ca-certificates.crt`
-   - **Content:** Paste your downloaded Aiven CA certificate
-   - Click **Save**
+7. **Click "Create Web Service"**
 
-8. **Click "Create Web Service"**
+Render will automatically:
+- Build the Docker image
+- Run `php artisan migrate --force`
+- Start the container with health checks
 
 ---
 
-## Step 5: Run Migrations on Render
+## Step 5: Verify Deployment
 
-After deployment completes:
-
-1. Go to **Shell** tab in Render dashboard
-2. Run:
-```bash
-php artisan migrate --force
+**Health Check:**
 ```
-
----
-
-## Step 6: Verify Deployment
+https://task-management-api.onrender.com/health
+```
+Should return: `{"status":"ok"}`
 
 **Check Laravel API:**
 ```
@@ -165,11 +177,23 @@ Should return: `{"data":[]}`
 
 ---
 
+## Docker Features
+
+The Dockerfile includes:
+- **Multi-stage build** for smaller image size (~80MB)
+- **PHP 8.3 with OPcache** for optimal performance
+- **Nginx + PHP-FPM** with supervisor process management
+- **Pre-optimized Laravel** (config, route, view cached at build time)
+- **Health checks** for container monitoring
+- **Non-root user** for security
+
+---
+
 ## Environment Summary
 
 | Service | URL | Credentials |
 |---------|-----|-------------|
-| **Aiven MySQL** | `mysql-xxxxx-taskmanagement1.j.aivencloud.com:xxxxx` | Username, Password, CA Cert |
+| **Aiven MySQL** | `mysql-xxxxx-taskmanagement1.j.aivencloud.com:xxxxx` | Username, Password |
 | **Render Laravel** | `https://task-management-api.onrender.com` | Auto-generated |
 
 ---
@@ -186,16 +210,21 @@ Should return: `{"data":[]}`
 ## Troubleshooting
 
 **Render can't connect to Aiven:**
-- Verify SSL certificate path is `/etc/ssl/certs/ca-certificates.crt`
-- Check DB_SSL_CA is set correctly
+- Verify `MYSQL_ATTR_SSL_CA` is set to `/etc/ssl/certs/ca-certificates.crt`
+- Check DB_SSL_CA environment variable
 - Test in Render Shell: `php artisan tinker` → `DB::connection()->getPdo()`
+
+**Container fails health check:**
+- Verify `/health` route is accessible
+- Check Render logs for PHP errors
+- Ensure `LOG_CHANNEL=stderr` is set
 
 **Migrations fail:**
 - Verify Aiven host/port credentials
-- Ensure SSL connection is working
-- Run: `php artisan migrate --force`
+- Ensure SSL connection is configured
+- Run manually in Render Shell: `php artisan migrate --force`
 
 **APP_KEY error:**
 - Generate key: `php artisan key:generate --show`
 - Add to Render environment variables
-- Redeploy or run: `php artisan config:clear` in Shell
+- Redeploy the service
