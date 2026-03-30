@@ -12,19 +12,13 @@ A RESTful API for managing tasks with priority-based sorting, status tracking, a
 - **Comprehensive Validation** - Form requests with strict business rules
 - **Full Test Coverage** - Feature tests for all endpoints
 
----
-
 ## Prerequisites
-
-Before installing, ensure your system has the following:
 
 | Requirement | Version | Description |
 |-------------|---------|-------------|
 | PHP | ^8.3 | PHP runtime (CLI and FPM) |
 | Composer | 2.x | PHP dependency manager |
 | MySQL | 8.0+ or 5.7+ | Database server (or SQLite for local dev) |
-| Node.js | 18.x+ | JavaScript runtime (for Vite/asset building) |
-| npm | 9.x+ | Node package manager |
 
 ### Check Prerequisites
 
@@ -32,66 +26,25 @@ Before installing, ensure your system has the following:
 php -v          # Should show PHP 8.3.x
 composer -v     # Should show Composer 2.x
 mysql -V        # Should show MySQL 8.0+
-node -v         # Should show v18.x or higher
-npm -v          # Should show 9.x or higher
 ```
-
----
 
 ## Installation
 
-### Option 1: Clone from Repository
-
 ```bash
-# Clone the repository
-git clone <repository-url> task-management
-cd task-management
+# Navigate to Server directory
+cd Server
 
 # Install PHP dependencies
 composer install
 
-# Install Node.js dependencies
-npm install
-
-# Build assets
-npm run build
-```
-
-### Option 2: Use ZIP File
-
-```bash
-# Extract the ZIP file
-unzip task-management.zip -d task-management
-cd task-management
-
-# Install PHP dependencies
-composer install
-
-# Install Node.js dependencies
-npm install
-
-# Build assets
-npm run build
-```
-
----
-
-## Environment Configuration
-
-### 1. Create Environment File
-
-```bash
-# Copy the example environment file
+# Create environment file
 cp .env.example .env
-```
 
-### 2. Generate Application Key
-
-```bash
+# Generate application key
 php artisan key:generate
 ```
 
-### 3. Configure Database
+## Environment Configuration
 
 Edit `.env` file with your database credentials:
 
@@ -116,13 +69,9 @@ Then create the SQLite database file:
 touch database/database.sqlite
 ```
 
----
-
 ## Database Setup
 
-### 1. Run Migrations
-
-Creates all database tables with optimized indexes:
+### Run Migrations
 
 ```bash
 php artisan migrate
@@ -132,29 +81,19 @@ php artisan migrate
 - `tasks` - Main tasks table with all indexes
 - `users`, `cache`, `jobs` - Laravel system tables
 
-### 2. (Optional) Seed Sample Data
-
-Populate the database with test tasks:
+### (Optional) Seed Sample Data
 
 ```bash
 php artisan db:seed --class=TaskSeeder
 ```
 
-This creates sample tasks with various priorities and statuses for testing.
-
-### 3. Verify Setup
-
-Check database connection and tables:
+### Verify Setup
 
 ```bash
 php artisan migrate:status
 ```
 
----
-
 ## Running the Application
-
-### Start Development Server
 
 ```bash
 php artisan serve
@@ -164,29 +103,9 @@ The API will be available at: `http://localhost:8000`
 
 Base API endpoint: `http://localhost:8000/api/v1`
 
-### Development Mode (with Vite)
-
-If you're modifying frontend assets:
-
-```bash
-npm run dev
-```
-
----
-
 ## Deployment (Render + Docker)
 
 Deploy the API to production using Render's free tier with Docker.
-
-### Architecture
-
-```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│    Frontend     │────▶│     Render      │────▶│     Aiven       │
-│   (Vercel)      │     │  Laravel API    │     │     MySQL       │
-│                 │     │   (Docker)      │     │                 │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-```
 
 ### Prerequisites
 
@@ -198,8 +117,7 @@ Deploy the API to production using Render's free tier with Docker.
 
 1. Go to [aiven.io](https://aiven.io) → Create service → **MySQL**
 2. Plan: **Startup-1 (Free)**
-3. Copy credentials:
-   - Host, Port, Database, Username, Password
+3. Copy credentials: Host, Port, Database, Username, Password
 
 ### Step 2: Prepare Environment
 
@@ -282,7 +200,7 @@ Response: `{"data":[]}`
 
 See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed troubleshooting.
 
----
+## Testing
 
 ### Run All Tests
 
@@ -309,13 +227,11 @@ php artisan test tests/Feature/Api/V1/DeleteTaskTest.php
 php artisan test tests/Feature/Api/V1/DailyReportTest.php
 ```
 
-### Run Tests with Coverage (if configured)
+### Run Tests with Coverage
 
 ```bash
 php artisan test --coverage
 ```
-
----
 
 ## API Endpoints
 
@@ -347,8 +263,6 @@ curl -X PATCH http://localhost:8000/api/v1/tasks/1/status \
 curl "http://localhost:8000/api/v1/tasks/report?date=2026-04-01"
 ```
 
----
-
 ## Full API Documentation
 
 See [API_DOCUMENTATION.md](API_DOCUMENTATION.md) for detailed endpoint documentation including:
@@ -357,8 +271,6 @@ See [API_DOCUMENTATION.md](API_DOCUMENTATION.md) for detailed endpoint documenta
 - Error responses
 - Database optimization details
 - Business rules
-
----
 
 ## Project Structure
 
@@ -383,8 +295,6 @@ routes/
 └── api.php                # API Routes
 ```
 
----
-
 ## Database Schema
 
 ### Tasks Table
@@ -408,8 +318,6 @@ routes/
 - `idx_tasks_status_priority_due_date` - For filtered list queries
 - `idx_tasks_priority_due_date` - For unfiltered list queries
 - `idx_tasks_due_date_priority_status` - For daily report aggregation
-
----
 
 ## Troubleshooting
 
@@ -443,8 +351,6 @@ php artisan key:generate
 php artisan serve --port=8080
 ```
 
----
-
 ## Development Commands
 
 | Command | Description |
@@ -456,18 +362,11 @@ php artisan serve --port=8080
 | `php artisan db:seed --class=TaskSeeder` | Seed tasks only |
 | `php artisan test` | Run PHPUnit tests |
 | `php artisan route:list` | List all routes |
-| `composer install` | Install PHP deps |
-| `npm install` | Install Node deps |
-| `npm run build` | Build production assets |
-| `npm run dev` | Start Vite dev server |
-
----
+| `composer install` | Install PHP dependencies |
 
 ## License
 
 This project is open-sourced software.
-
----
 
 ## Support
 
