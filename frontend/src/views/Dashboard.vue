@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import { useTaskStore, useReportStore, useUiStore } from "@/stores/index.js";
 import { formatRelativeDate } from "@/utils/formatters.js";
 import { STATUSES, PRIORITIES } from "@/utils/constants.js";
+import CreateTaskModal from "@/components/modals/CreateTaskModal.vue";
 
 const router = useRouter();
 const taskStore = useTaskStore();
@@ -70,6 +71,11 @@ function navigateToTasks() {
 
 function navigateToReport() {
   router.push("/report");
+}
+
+function handleTaskCreated() {
+  taskStore.fetchTasks();
+  uiStore.closeModal("createTask");
 }
 
 function getPriorityColor(priority) {
@@ -144,6 +150,13 @@ function getStatusColor(status) {
 
         <button class="btn-link" @click="navigateToReport">View Full Report</button>
       </div>
+
+      <!-- Create Task Modal -->
+      <CreateTaskModal
+        :is-open="uiStore.modals.createTask"
+        @close="uiStore.closeModal('createTask')"
+        @success="handleTaskCreated"
+      />
 
       <!-- Recent Tasks -->
       <div class="dashboard-card recent-tasks">
