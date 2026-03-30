@@ -14,7 +14,10 @@ return [
     'allowed_methods' => ['*'],
 
     # Allowed request origins
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+        'https://task-management-psi-jade.vercel.app',
+        'http://localhost:5173', // Local development
+    ],
 
     # Allowed origin patterns (regex)
     'allowed_origins_patterns' => [],
