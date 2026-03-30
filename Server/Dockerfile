@@ -82,9 +82,8 @@ RUN mkdir -p storage/framework/cache/data \
     && chown -R www:www storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Pre-optimize Laravel at build time (zero runtime overhead)
-RUN php artisan config:cache && \
-    php artisan route:cache && \
+# Pre-optimize Laravel (routes and views only, NOT config - env vars needed)
+RUN php artisan route:cache && \
     php artisan view:cache && \
     chown -R www:www bootstrap/cache storage/framework/views
 
@@ -98,5 +97,5 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:8080/health || exit 1
 
-# Run database migrations at runtime (env vars available then)
-CMD php artisan migrate --force && /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+# Cache config, run migrations, and start server at runtime (env vars available)
+CMD php artisan config:cache && php artisan migrate --force && /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
