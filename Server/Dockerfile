@@ -92,14 +92,11 @@ RUN php artisan config:cache && \
 COPY docker/mysql/aiven-ca.pem /etc/ssl/certs/aiven-ca.pem
 RUN cat /etc/ssl/certs/aiven-ca.pem >> /etc/ssl/certs/ca-certificates.crt
 
-# Run database migrations (requires DB connection during build)
-RUN php artisan migrate --force
-
 EXPOSE 8080
 
 # Health check for Render
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:8080/health || exit 1
 
-# Supervisor manages nginx + php-fpm (runs as root)
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# Run database migrations at runtime (env vars available then)
+CMD php artisan migrate --force && /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
