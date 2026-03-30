@@ -1,0 +1,45 @@
+; PHP Production Configuration for Laravel
+; Optimized for containerized deployments
+
+[PHP]
+; Memory settings
+memory_limit = 256M
+max_execution_time = 60
+max_input_time = 60
+max_input_vars = 3000
+
+; Error handling - log to stderr for Docker
+error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT
+display_errors = Off
+display_startup_errors = Off
+log_errors = On
+error_log = /dev/stderr
+
+; File uploads
+file_uploads = On
+upload_max_filesize = 20M
+post_max_size = 20M
+max_file_uploads = 20
+
+; Security
+expose_php = Off
+allow_url_fopen = Off
+allow_url_include = Off
+disable_functions = exec,passthru,shell_exec,system,proc_open,popen
+
+; Session settings
+session.cookie_httponly = 1
+session.cookie_secure = 1
+session.use_strict_mode = 1
+
+; OPcache (additional settings in opcache.ini)
+opcache.enable = 1
+opcache.memory_consumption = 256
+opcache.max_accelerated_files = 20000
+opcache.revalidate_freq = 0
+opcache.validate_timestamps = 0
+opcache.interned_strings_buffer = 16
+opcache.fast_shutdown = 1
+
+; Date
+date.timezone = UTC
