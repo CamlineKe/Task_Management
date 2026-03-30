@@ -174,7 +174,115 @@ npm run dev
 
 ---
 
-## Testing
+## Deployment (Render + Docker)
+
+Deploy the API to production using Render's free tier with Docker.
+
+### Architecture
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│    Frontend     │────▶│     Render      │────▶│     Aiven       │
+│   (Vercel)      │     │  Laravel API    │     │     MySQL       │
+│                 │     │   (Docker)      │     │                 │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+```
+
+### Prerequisites
+
+- [Aiven](https://aiven.io) account (free MySQL)
+- [Render](https://render.com) account (free tier)
+- GitHub repository with your code
+
+### Step 1: Aiven MySQL Setup
+
+1. Go to [aiven.io](https://aiven.io) → Create service → **MySQL**
+2. Plan: **Startup-1 (Free)**
+3. Copy credentials:
+   - Host, Port, Database, Username, Password
+
+### Step 2: Prepare Environment
+
+Create `.env.production`:
+
+```env
+APP_NAME="Task Management API"
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-app.onrender.com
+APP_KEY=base64:your_generated_key
+
+LOG_CHANNEL=stderr
+LOG_LEVEL=info
+
+DB_CONNECTION=mysql
+DB_HOST=your-aiven-host.aivencloud.com
+DB_PORT=your-port
+DB_DATABASE=defaultdb
+DB_USERNAME=avnadmin
+DB_PASSWORD=your-password
+DB_SSL_CA=/etc/ssl/certs/ca-certificates.crt
+MYSQL_ATTR_SSL_CA=/etc/ssl/certs/ca-certificates.crt
+
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync
+FILESYSTEM_DISK=local
+
+FRONTEND_URL=https://your-frontend-url.com
+```
+
+Generate APP_KEY:
+```bash
+php artisan key:generate --show
+```
+
+### Step 3: Deploy to Render
+
+1. Go to [render.com](https://render.com) → **New +** → **Web Service**
+2. Connect your GitHub repository
+3. Configure:
+
+| Setting | Value |
+|---------|-------|
+| Name | `task-management-api` |
+| Environment | **Docker** |
+| Root Directory | `Server` (if in subfolder) |
+| Dockerfile Path | `./Dockerfile` |
+
+4. Add all environment variables from `.env.production`
+5. Click **Create Web Service**
+
+Render will:
+- Build the Docker image
+- Run `php artisan migrate --force`
+- Start the container
+
+### Step 4: Verify Deployment
+
+**Health Check:**
+```
+https://your-app.onrender.com/health
+```
+Response: `{"status":"ok"}`
+
+**API Test:**
+```
+https://your-app.onrender.com/api/v1/tasks
+```
+Response: `{"data":[]}`
+
+### Docker Features
+
+- **Multi-stage build** (~80MB image)
+- **PHP 8.3 + OPcache** for performance
+- **Nginx + PHP-FPM** with supervisor
+- **Pre-optimized Laravel** (cached config/routes/views)
+- **Health checks** for monitoring
+- **SSL-ready** for Aiven MySQL
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed troubleshooting.
+
+---
 
 ### Run All Tests
 
