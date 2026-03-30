@@ -79,6 +79,129 @@ If you forked this repository:
 3. Follow the setup steps above
 4. The project is ready to run locally - no additional configuration needed
 
+### From ZIP File
+
+If you have the project as a ZIP file:
+
+#### Prerequisites Check
+
+Before starting, verify you have the required software:
+
+```bash
+# Check PHP version (must be 8.3 or higher)
+php -v
+
+# Check Composer is installed
+composer -v
+
+# Check Node.js version (must be 20.19.0 or higher, or 22.12.0+)
+node -v
+
+# Check npm is installed
+npm -v
+
+# Check MySQL (optional, can use SQLite instead)
+mysql -V
+```
+
+**Install any missing prerequisites:**
+- **PHP 8.3**: https://www.php.net/downloads.php
+- **Composer**: https://getcomposer.org/download/
+- **Node.js**: https://nodejs.org/ (Download LTS version)
+- **MySQL** (optional): https://dev.mysql.com/downloads/
+
+#### Setup Steps
+
+1. **Extract the ZIP file:**
+   ```bash
+   unzip Task_Management.zip -d Task_Management
+   cd Task_Management
+   ```
+
+2. **Setup Backend:**
+   ```bash
+   cd Server
+   
+   # Install PHP dependencies
+   composer install
+   
+   # Create environment file
+   cp .env.example .env
+   
+   # Generate application key
+   php artisan key:generate
+   
+   # Configure database (see Database Options below)
+   
+   # Run migrations
+   php artisan migrate
+   
+   # Optional: Seed with sample data
+   php artisan db:seed --class=TaskSeeder
+   
+   # Start the API server
+   php artisan serve
+   ```
+
+3. **Setup Frontend (in a new terminal):**
+   ```bash
+   cd Task_Management/frontend
+   
+   # Install Node.js dependencies
+   npm install
+   
+   # Start the development server
+   npm run dev
+   ```
+
+4. **Access the application:**
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:8000
+
+#### Database Setup (MySQL)
+
+1. Create a MySQL database:
+   ```sql
+   CREATE DATABASE task_management;
+   ```
+2. Edit `Server/.env` file with your MySQL credentials:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=task_management
+   DB_USERNAME=your_username
+   DB_PASSWORD=your_password
+   ```
+
+#### Troubleshooting Common Issues
+
+**"Could not find driver" error:**
+- Install PHP MySQL PDO extension:
+  - Linux: `sudo apt-get install php8.3-mysql`
+  - Windows/Mac: Enable `extension=pdo_mysql` in `php.ini`
+
+**"Permission denied" on storage/logs:**
+```bash
+cd Server
+chmod -R 775 storage bootstrap/cache
+```
+
+**"No application encryption key":**
+```bash
+cd Server
+php artisan key:generate
+```
+
+**Port already in use:**
+- Backend: `php artisan serve --port=8080`
+- Frontend: Edit `vite.config.js` to change port
+
+**"composer install" fails with memory error:**
+```bash
+php -d memory_limit=-1 /usr/local/bin/composer install
+```
+
 ## Project Structure
 
 ```
@@ -124,7 +247,7 @@ Task_Management/
 ### Backend
 - Laravel 13
 - PHP 8.3
-- MySQL/SQLite
+- MySQL
 - PHPUnit (Testing)
 
 ## Documentation
