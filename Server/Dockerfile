@@ -85,7 +85,8 @@ RUN mkdir -p storage/framework/cache/data \
 # Pre-optimize Laravel at build time (zero runtime overhead)
 RUN php artisan config:cache && \
     php artisan route:cache && \
-    php artisan view:cache
+    php artisan view:cache && \
+    chown -R www:www bootstrap/cache storage/framework/views
 
 EXPOSE 8080
 
