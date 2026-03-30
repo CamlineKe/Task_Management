@@ -2,6 +2,8 @@
 
 A full-stack task management application with a Vue 3 frontend and Laravel API backend. Features task prioritization, status tracking, daily reports, and dark mode support.
 
+**Repository:** https://github.com/CamlineKe/Task_Management
+
 ## Overview
 
 This project consists of two main components:
@@ -9,7 +11,7 @@ This project consists of two main components:
 - **Frontend** (`frontend/`) - Vue 3 SPA with Pinia state management
 - **Backend** (`Server/`) - Laravel 13 RESTful API
 
-## Quick Start
+## Getting Started
 
 ### Prerequisites
 
@@ -18,7 +20,14 @@ This project consists of two main components:
 - **Composer**: 2.x
 - **MySQL**: 8.0+ (or SQLite for local dev)
 
-### 1. Clone and Setup Backend
+### Clone the Repository
+
+```bash
+git clone https://github.com/CamlineKe/Task_Management.git
+cd Task_Management
+```
+
+### 1. Setup Backend
 
 ```bash
 cd Server
@@ -30,7 +39,10 @@ composer install
 cp .env.example .env
 php artisan key:generate
 
-# Configure database in .env, then run migrations
+# Configure database (choose MySQL or SQLite)
+# Edit .env file with your database credentials
+
+# Run migrations
 php artisan migrate
 
 # (Optional) Seed sample data
@@ -44,8 +56,10 @@ API will be available at `http://localhost:8000`
 
 ### 2. Setup Frontend
 
+In a new terminal:
+
 ```bash
-cd frontend
+cd Task_Management/frontend
 
 # Install dependencies
 npm install
@@ -55,6 +69,15 @@ npm run dev
 ```
 
 Frontend will be available at `http://localhost:5173`
+
+### For Forkers
+
+If you forked this repository:
+
+1. Fork on GitHub
+2. Clone your fork: `git clone https://github.com/YOUR_USERNAME/Task_Management.git`
+3. Follow the setup steps above
+4. The project is ready to run locally - no additional configuration needed
 
 ## Project Structure
 
