@@ -88,8 +88,11 @@ RUN php artisan config:cache && \
     php artisan view:cache && \
     chown -R www:www bootstrap/cache storage/framework/views
 
+# Copy and setup Aiven MySQL CA certificate for SSL connection
+COPY docker/mysql/aiven-ca.pem /etc/ssl/certs/aiven-ca.pem
+RUN cat /etc/ssl/certs/aiven-ca.pem >> /etc/ssl/certs/ca-certificates.crt
+
 # Run database migrations (requires DB connection during build)
-# Note: Ensure DB_HOST and credentials are available as build args or env vars
 RUN php artisan migrate --force
 
 EXPOSE 8080
