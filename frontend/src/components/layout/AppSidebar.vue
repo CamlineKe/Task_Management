@@ -29,6 +29,13 @@ const menuItems = [
 function isActive(path) {
   return route.path === path
 }
+
+function handleNavClick() {
+  // Close mobile sidebar after navigation
+  if (uiStore.isMobileSidebarOpen) {
+    uiStore.closeMobileSidebar()
+  }
+}
 </script>
 
 <template>
@@ -75,6 +82,7 @@ function isActive(path) {
             :to="item.path"
             class="nav-link"
             :class="{ 'active': isActive(item.path) }"
+            @click="handleNavClick"
           >
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
