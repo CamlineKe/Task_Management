@@ -263,6 +263,7 @@ function handleNavClick() {
   
   .sidebar.mobile-open {
     transform: translateX(0);
+    z-index: calc(var(--z-fixed) + 10);
   }
 }
 </style>
