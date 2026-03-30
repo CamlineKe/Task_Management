@@ -1,58 +1,369 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Task Management API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A RESTful API for managing tasks with priority-based sorting, status tracking, and daily reporting capabilities. Built with Laravel 13 and optimized database queries.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Task Management** - Create, list, update status, and delete tasks
+- **Priority System** - Tasks sorted by priority (high → medium → low)
+- **Status Workflow** - Enforced progression: pending → in_progress → done
+- **Daily Reports** - Aggregated task counts by priority and status
+- **Database Optimization** - 8 indexes for optimal query performance
+- **Comprehensive Validation** - Form requests with strict business rules
+- **Full Test Coverage** - Feature tests for all endpoints
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Prerequisites
 
-## Learning Laravel
+Before installing, ensure your system has the following:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+| Requirement | Version | Description |
+|-------------|---------|-------------|
+| PHP | ^8.3 | PHP runtime (CLI and FPM) |
+| Composer | 2.x | PHP dependency manager |
+| MySQL | 8.0+ or 5.7+ | Database server (or SQLite for local dev) |
+| Node.js | 18.x+ | JavaScript runtime (for Vite/asset building) |
+| npm | 9.x+ | Node package manager |
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### Check Prerequisites
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+php -v          # Should show PHP 8.3.x
+composer -v     # Should show Composer 2.x
+mysql -V        # Should show MySQL 8.0+
+node -v         # Should show v18.x or higher
+npm -v          # Should show 9.x or higher
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## Installation
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Option 1: Clone from Repository
 
-## Code of Conduct
+```bash
+# Clone the repository
+git clone <repository-url> task-management
+cd task-management
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Install PHP dependencies
+composer install
 
-## Security Vulnerabilities
+# Install Node.js dependencies
+npm install
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Build assets
+npm run build
+```
+
+### Option 2: Use ZIP File
+
+```bash
+# Extract the ZIP file
+unzip task-management.zip -d task-management
+cd task-management
+
+# Install PHP dependencies
+composer install
+
+# Install Node.js dependencies
+npm install
+
+# Build assets
+npm run build
+```
+
+---
+
+## Environment Configuration
+
+### 1. Create Environment File
+
+```bash
+# Copy the example environment file
+cp .env.example .env
+```
+
+### 2. Generate Application Key
+
+```bash
+php artisan key:generate
+```
+
+### 3. Configure Database
+
+Edit `.env` file with your database credentials:
+
+**For MySQL:**
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=task_management
+DB_USERNAME=root
+DB_PASSWORD=your_password
+```
+
+**For SQLite (easier for local development):**
+```env
+DB_CONNECTION=sqlite
+# Remove or comment out other DB_* settings
+```
+
+Then create the SQLite database file:
+```bash
+touch database/database.sqlite
+```
+
+---
+
+## Database Setup
+
+### 1. Run Migrations
+
+Creates all database tables with optimized indexes:
+
+```bash
+php artisan migrate
+```
+
+**Tables Created:**
+- `tasks` - Main tasks table with all indexes
+- `users`, `cache`, `jobs` - Laravel system tables
+
+### 2. (Optional) Seed Sample Data
+
+Populate the database with test tasks:
+
+```bash
+php artisan db:seed --class=TaskSeeder
+```
+
+This creates sample tasks with various priorities and statuses for testing.
+
+### 3. Verify Setup
+
+Check database connection and tables:
+
+```bash
+php artisan migrate:status
+```
+
+---
+
+## Running the Application
+
+### Start Development Server
+
+```bash
+php artisan serve
+```
+
+The API will be available at: `http://localhost:8000`
+
+Base API endpoint: `http://localhost:8000/api/v1`
+
+### Development Mode (with Vite)
+
+If you're modifying frontend assets:
+
+```bash
+npm run dev
+```
+
+---
+
+## Testing
+
+### Run All Tests
+
+```bash
+php artisan test
+```
+
+### Run Specific Test Suite
+
+```bash
+# Task creation tests
+php artisan test tests/Feature/Api/V1/CreateTaskTest.php
+
+# Task listing tests
+php artisan test tests/Feature/Api/V1/ListTasksTest.php
+
+# Status update tests
+php artisan test tests/Feature/Api/V1/UpdateTaskStatusTest.php
+
+# Delete task tests
+php artisan test tests/Feature/Api/V1/DeleteTaskTest.php
+
+# Daily report tests
+php artisan test tests/Feature/Api/V1/DailyReportTest.php
+```
+
+### Run Tests with Coverage (if configured)
+
+```bash
+php artisan test --coverage
+```
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/v1/tasks` | Create a new task |
+| `GET` | `/api/v1/tasks` | List all tasks (optional `?status` filter) |
+| `PATCH` | `/api/v1/tasks/{id}/status` | Update task status |
+| `DELETE` | `/api/v1/tasks/{id}` | Delete completed task |
+| `GET` | `/api/v1/tasks/report?date=YYYY-MM-DD` | Daily report |
+
+### Quick Test with cURL
+
+```bash
+# Create a task
+curl -X POST http://localhost:8000/api/v1/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Test Task","due_date":"2026-04-01","priority":"high"}'
+
+# List tasks
+curl http://localhost:8000/api/v1/tasks
+
+# Update status
+curl -X PATCH http://localhost:8000/api/v1/tasks/1/status \
+  -H "Content-Type: application/json" \
+  -d '{"status":"in_progress"}'
+
+# Get daily report
+curl "http://localhost:8000/api/v1/tasks/report?date=2026-04-01"
+```
+
+---
+
+## Full API Documentation
+
+See [API_DOCUMENTATION.md](API_DOCUMENTATION.md) for detailed endpoint documentation including:
+- Request/response schemas
+- Validation rules
+- Error responses
+- Database optimization details
+- Business rules
+
+---
+
+## Project Structure
+
+```
+app/
+├── DTOs/                    # Data Transfer Objects
+├── Http/
+│   ├── Controllers/Api/V1/  # API Controllers
+│   ├── Requests/Api/V1/    # Form Request Validations
+│   └── Resources/Api/V1/   # API Response Resources
+├── Models/                  # Eloquent Models
+├── Services/                # Business Logic Layer
+│   └── Interfaces/         # Service Contracts
+├── Enums/                   # Enumerations
+database/
+├── factories/              # Model Factories
+├── migrations/             # Database Migrations
+└── seeders/                # Database Seeders
+tests/
+└── Feature/Api/V1/         # API Feature Tests
+routes/
+└── api.php                # API Routes
+```
+
+---
+
+## Database Schema
+
+### Tasks Table
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | bigint | Primary key |
+| `title` | string(255) | Task title |
+| `due_date` | date | Due date |
+| `priority` | enum | low, medium, high |
+| `status` | enum | pending, in_progress, done |
+| `created_at` | timestamp | Creation time |
+| `updated_at` | timestamp | Last update |
+
+### Indexes
+
+- `unique_title_due_date` - Unique constraint on title + due_date
+- `idx_tasks_due_date` - For date filtering
+- `idx_tasks_status` - For status filtering
+- `idx_tasks_priority` - For priority sorting
+- `idx_tasks_status_priority_due_date` - For filtered list queries
+- `idx_tasks_priority_due_date` - For unfiltered list queries
+- `idx_tasks_due_date_priority_status` - For daily report aggregation
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+**1. "Could not find driver" error**
+- Install PDO MySQL extension: `sudo apt-get install php8.3-mysql`
+- Or use SQLite: change `DB_CONNECTION` to `sqlite` in `.env`
+
+**2. "Permission denied" on storage/logs**
+```bash
+chmod -R 775 storage bootstrap/cache
+chmod -R 775 storage/logs
+```
+
+**3. "Base table or view not found"**
+- Run migrations: `php artisan migrate`
+
+**4. "Unique constraint violation" on migration**
+- If tasks already exist, either:
+  - Use `php artisan migrate:fresh` (⚠️ deletes all data)
+  - Or manually check for duplicates in database
+
+**5. "No application encryption key"**
+```bash
+php artisan key:generate
+```
+
+**6. Port 8000 already in use**
+```bash
+php artisan serve --port=8080
+```
+
+---
+
+## Development Commands
+
+| Command | Description |
+|---------|-------------|
+| `php artisan serve` | Start dev server |
+| `php artisan migrate` | Run migrations |
+| `php artisan migrate:fresh` | Reset database with migrations |
+| `php artisan migrate:fresh --seed` | Reset, migrate, and seed |
+| `php artisan db:seed --class=TaskSeeder` | Seed tasks only |
+| `php artisan test` | Run PHPUnit tests |
+| `php artisan route:list` | List all routes |
+| `composer install` | Install PHP deps |
+| `npm install` | Install Node deps |
+| `npm run build` | Build production assets |
+| `npm run dev` | Start Vite dev server |
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software.
+
+---
+
+## Support
+
+For issues or questions:
+1. Check [API_DOCUMENTATION.md](API_DOCUMENTATION.md) for endpoint details
+2. Review [Tests.md](Tests.md) for test scenarios
+3. Run `php artisan route:list` to verify routes
