@@ -271,6 +271,34 @@ function hasTransitions(currentStatus) {
   color: var(--gray-500);
 }
 
+/* Dark Theme */
+[data-theme="dark"] .task-table tr:hover td {
+  background-color: var(--gray-300);
+}
+
+[data-theme="dark"] .update-btn {
+  background-color: var(--primary-900);
+  color: var(--primary-400);
+}
+
+[data-theme="dark"] .update-btn:hover {
+  background-color: var(--primary-800);
+}
+
+[data-theme="dark"] .delete-btn {
+  background-color: var(--color-danger-light);
+  color: var(--color-danger);
+}
+
+[data-theme="dark"] .delete-btn:hover:not(:disabled) {
+  background-color: #7f1d1d;
+}
+
+[data-theme="dark"] .delete-btn.disabled {
+  background-color: var(--gray-800);
+  color: var(--gray-500);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .task-table {
