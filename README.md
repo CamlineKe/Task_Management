@@ -108,7 +108,7 @@ mysql -V
 - **PHP 8.3**: https://www.php.net/downloads.php
 - **Composer**: https://getcomposer.org/download/
 - **Node.js**: https://nodejs.org/ (Download LTS version)
-- **MySQL** (optional): https://dev.mysql.com/downloads/
+- **MySQL** : https://dev.mysql.com/downloads/
 
 #### Setup Steps
 
