@@ -9,7 +9,7 @@ export const useUiStore = defineStore('ui', () => {
   // State
   const sidebarCollapsed = ref(false)
   const mobileSidebarOpen = ref(false)
-  const theme = ref('light')
+  const theme = ref('dark')
   const online = ref(navigator.onLine)
   
   // Modal states

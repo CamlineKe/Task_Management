@@ -126,13 +126,14 @@ function handleNavClick() {
   left: 0;
   height: 100vh;
   width: var(--sidebar-width);
-  background-color: var(--gray-900);
-  color: white;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
   display: flex;
   flex-direction: column;
   transition: width var(--duration-normal), transform var(--duration-normal), visibility 0s;
   z-index: var(--z-fixed);
   overflow-x: hidden;
+  border-right: 1px solid var(--color-border);
 }
 
 .sidebar.collapsed {
@@ -145,7 +146,7 @@ function handleNavClick() {
   align-items: center;
   justify-content: space-between;
   padding: var(--space-4);
-  border-bottom: 1px solid var(--gray-800);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .logo {
@@ -166,13 +167,13 @@ function handleNavClick() {
   font-size: var(--text-lg);
   font-weight: var(--font-semibold);
   white-space: nowrap;
-  color: var(--gray-100);
+  color: var(--color-text-primary);
 }
 
 .toggle-btn {
   background: none;
   border: none;
-  color: var(--gray-400);
+  color: var(--color-text-secondary);
   cursor: pointer;
   padding: var(--space-2);
   border-radius: var(--radius-md);
@@ -180,8 +181,8 @@ function handleNavClick() {
 }
 
 .toggle-btn:hover {
-  background-color: var(--gray-800);
-  color: var(--gray-100);
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
 }
 
 .toggle-btn svg {
@@ -207,7 +208,7 @@ function handleNavClick() {
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  color: var(--gray-400);
+  color: var(--color-text-secondary);
   text-decoration: none;
   transition: all var(--duration-fast);
   margin: var(--space-1) var(--space-3);
@@ -215,13 +216,13 @@ function handleNavClick() {
 }
 
 .nav-link:hover {
-  background-color: var(--gray-800);
-  color: var(--gray-100);
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
 }
 
 .nav-link.active {
   background-color: var(--primary-600);
-  color: var(--gray-100);
+  color: white;
 }
 
 .nav-icon {
@@ -239,7 +240,7 @@ function handleNavClick() {
 /* Footer */
 .sidebar-footer {
   padding: var(--space-4);
-  border-top: 1px solid var(--gray-800);
+  border-top: 1px solid var(--color-border);
 }
 
 .network-status {
@@ -247,7 +248,7 @@ function handleNavClick() {
   align-items: center;
   gap: var(--space-2);
   font-size: var(--text-xs);
-  color: var(--gray-500);
+  color: var(--color-text-muted);
 }
 
 .network-status.online {
@@ -258,7 +259,7 @@ function handleNavClick() {
   width: 8px;
   height: 8px;
   border-radius: var(--radius-full);
-  background-color: var(--gray-500);
+  background-color: var(--color-text-muted);
 }
 
 .network-status.online .status-dot {
