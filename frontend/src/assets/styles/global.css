@@ -205,6 +205,12 @@ textarea {
   --color-border: #334155;
   --color-border-focus: #60a5fa;
 
+  /* Notification Colors - Dark variants */
+  --color-success-light: #14532d;
+  --color-danger-light: #7f1d1d;
+  --color-warning-light: #78350f;
+  --color-info-light: #164e63;
+
   /* Override gray scale for dark theme */
   --gray-50: #0f172a;
   --gray-100: #1e293b;

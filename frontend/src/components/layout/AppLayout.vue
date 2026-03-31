@@ -209,4 +209,17 @@ onMounted(() => {
     max-width: none;
   }
 }
+
+/* Dark Theme */
+[data-theme="dark"] .notification-message {
+  color: var(--gray-900);
+}
+
+[data-theme="dark"] .notification-close {
+  color: var(--gray-600);
+}
+
+[data-theme="dark"] .notification-close:hover {
+  background-color: rgba(0, 0, 0, 0.15);
+}
 </style>

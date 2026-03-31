@@ -114,7 +114,7 @@ const color = colors[props.type];
   flex: 1;
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--gray-800);
+  color: var(--color-text-primary);
   line-height: 1.5;
 }
 
@@ -125,13 +125,13 @@ const color = colors[props.type];
   padding: var(--space-1);
   border-radius: var(--radius-md);
   cursor: pointer;
-  color: var(--gray-400);
+  color: var(--color-text-secondary);
   transition: all var(--duration-fast);
 }
 
 .toast-close:hover {
   background-color: rgba(0, 0, 0, 0.05);
-  color: var(--gray-600);
+  color: var(--color-text-primary);
 }
 
 .toast-close svg {
