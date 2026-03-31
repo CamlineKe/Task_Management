@@ -1,0 +1,205 @@
+# Task Management Application - Setup Instructions
+
+Complete step-by-step guide to set up and run the Task Management application from a ZIP file.
+
+---
+
+## Prerequisites
+
+Before starting, ensure you have the following software installed:
+
+| Software | Version | Download |
+|----------|---------|----------|
+| PHP | 8.3+ | https://www.php.net/downloads.php |
+| Composer | 2.x | https://getcomposer.org/download/ |
+| Node.js | 20.19.0+ or 22.12.0+ | https://nodejs.org/ (LTS) |
+| MySQL | 8.0+ | https://dev.mysql.com/downloads/ |
+
+### Verify Prerequisites
+
+Open a terminal and check your versions:
+
+```bash
+php -v          # Should show PHP 8.3.x or higher
+composer -v     # Should show Composer 2.x
+node -v         # Should show v20.19.0 or v22.12.0+
+npm -v          # Should be installed with Node.js
+mysql -V        # Should show MySQL 8.0+
+```
+
+---
+
+## Step 1: Extract the ZIP File
+
+1. Extract the ZIP file to a folder on your computer:
+   ```bash
+   unzip Task_Management.zip -d Task_Management
+   ```
+
+2. Navigate into the project directory:
+   ```bash
+   cd Task_Management
+   ```
+
+---
+
+## Step 2: Set Up MySQL Database
+
+1. Open MySQL and create a database:
+   ```bash
+   mysql -u root -p
+   ```
+
+2. In the MySQL prompt, create the database:
+   ```sql
+   CREATE DATABASE task_management;
+   EXIT;
+   ```
+
+---
+
+## Step 3: Configure Environment for MySQL
+
+1. Navigate to the Server directory:
+   ```bash
+   cd Server
+   ```
+
+2. Copy the example environment file:
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Edit the `.env` file with your database credentials. Open it in a text editor and update the database section:
+
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=task_management
+   DB_USERNAME=root
+   DB_PASSWORD=your_mysql_password
+   ```
+
+4. Generate the application key:
+   ```bash
+   php artisan key:generate
+   ```
+
+---
+
+## Step 4: Install Backend Dependencies
+
+While in the `Server` directory:
+
+1. Install PHP dependencies:
+   ```bash
+   composer install
+   ```
+
+2. Run database migrations:
+   ```bash
+   php artisan migrate
+   ```
+
+3. (Optional) Seed with sample data:
+   ```bash
+   php artisan db:seed --class=TaskSeeder
+   ```
+
+4. Start the backend server:
+   ```bash
+   php artisan serve
+   ```
+
+   The API will be available at `http://localhost:8000`
+
+---
+
+## Step 5: Set Up Frontend
+
+Open a **new terminal window** and navigate to the project:
+
+1. Go to the frontend directory:
+   ```bash
+   cd Task_Management/frontend
+   ```
+
+2. Install Node.js dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+   The frontend will be available at `http://localhost:5173`
+
+---
+
+## Step 6: Access the Application
+
+Once both servers are running:
+
+- **Frontend (Web App)**: http://localhost:5173
+- **Backend API**: http://localhost:8000
+
+---
+
+## Troubleshooting
+
+### "Could not find driver" error
+Install PHP MySQL PDO extension:
+- **Linux**: `sudo apt-get install php8.3-mysql`
+- **Windows/Mac**: Enable `extension=pdo_mysql` in your `php.ini` file
+
+### "Permission denied" on storage/logs
+```bash
+cd Server
+chmod -R 775 storage bootstrap/cache
+```
+
+### "No application encryption key"
+```bash
+cd Server
+php artisan key:generate
+```
+
+### Port already in use
+- Backend: `php artisan serve --port=8080`
+- Frontend: Edit `vite.config.js` to change the port
+
+### "composer install" fails with memory error
+```bash
+php -d memory_limit=-1 /usr/local/bin/composer install
+```
+
+---
+
+## Testing the API
+
+Test the API is working with cURL:
+
+```bash
+# Create a task
+curl -X POST http://localhost:8000/api/v1/tasks \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Test Task","due_date":"2026-04-01","priority":"high"}'
+
+# List tasks
+curl http://localhost:8000/api/v1/tasks
+```
+
+---
+
+## Next Steps
+
+- View full API documentation: `Server/API_DOCUMENTATION.md`
+- Learn about testing: `Server/Tests.md`
+- Deploy to production: `Server/DEPLOYMENT.md`
+
+---
+
+**You now have the Task Management application running locally!**
