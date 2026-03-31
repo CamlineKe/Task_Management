@@ -94,7 +94,7 @@ onMounted(() => {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: var(--z-fixed);
+  z-index: calc(var(--z-fixed) - 10);
 }
 
 /* Notifications */

@@ -51,7 +51,7 @@ function handleNavClick() {
       
       <!-- Toggle Button -->
       <button 
-        class="toggle-btn"
+        class="toggle-btn desktop-only"
         @click="uiStore.toggleSidebar"
         :title="isCollapsed ? 'Expand' : 'Collapse'"
       >
@@ -69,6 +69,22 @@ function handleNavClick() {
             stroke-linejoin="round" 
             stroke-width="2" 
             d="M11 19l-7-7 7-7m8 14l-7-7 7-7" 
+          />
+        </svg>
+      </button>
+
+      <!-- Mobile Close Button -->
+      <button 
+        class="toggle-btn mobile-only"
+        @click="uiStore.closeMobileSidebar"
+        title="Close menu"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path 
+            stroke-linecap="round" 
+            stroke-linejoin="round" 
+            stroke-width="2" 
+            d="M6 18L18 6M6 6l12 12" 
           />
         </svg>
       </button>
@@ -114,7 +130,7 @@ function handleNavClick() {
   color: white;
   display: flex;
   flex-direction: column;
-  transition: width var(--duration-normal);
+  transition: width var(--duration-normal), transform var(--duration-normal), visibility 0s;
   z-index: var(--z-fixed);
   overflow-x: hidden;
 }
@@ -251,19 +267,34 @@ function handleNavClick() {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .sidebar {
-    transform: translateX(-100%);
-    width: var(--sidebar-width);
-  }
-  
   .sidebar.collapsed {
-    transform: translateX(-100%);
     width: var(--sidebar-width);
   }
   
-  .sidebar.mobile-open {
-    transform: translateX(0);
-    z-index: calc(var(--z-fixed) + 10);
+  .desktop-only {
+    display: none !important;
+  }
+  
+  .mobile-only {
+    display: flex !important;
+  }
+}
+
+/* Visibility utilities */
+.desktop-only {
+  display: flex;
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
+  .mobile-only {
+    display: flex;
   }
 }
 </style>

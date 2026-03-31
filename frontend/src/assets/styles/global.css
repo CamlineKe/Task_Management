@@ -239,6 +239,10 @@ textarea {
   color: var(--gray-800);
 }
 
+[data-theme="dark"] .notification-close:hover {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
 [data-theme="dark"] .header-btn:hover {
   background-color: var(--gray-200);
   color: var(--gray-700);
@@ -246,4 +250,20 @@ textarea {
 
 [data-theme="dark"] .page-content {
   background-color: var(--gray-100);
+}
+
+/* ============================================
+   MOBILE SIDEBAR
+   ============================================ */
+
+@media (max-width: 768px) {
+  .sidebar:not(.mobile-open) {
+    display: none;
+  }
+  
+  .sidebar.mobile-open {
+    display: flex !important;
+    width: var(--sidebar-width) !important;
+    z-index: 350;
+  }
 }
