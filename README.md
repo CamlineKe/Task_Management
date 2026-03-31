@@ -267,7 +267,131 @@ Task_Management/
 | DELETE | `/api/v1/tasks/{id}` | Delete task |
 | GET | `/api/v1/tasks/report` | Daily report |
 
-## Development
+### Example API Requests
+
+**Base URL:** `http://localhost:8000` (local) or `https://your-app.onrender.com` (deployed)
+
+#### 1. Create a Task
+
+```bash
+curl -X POST http://localhost:8000/api/v1/tasks \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Complete project documentation",
+    "due_date": "2026-04-15",
+    "priority": "high"
+  }'
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": 1,
+  "title": "Complete project documentation",
+  "due_date": "2026-04-15",
+  "priority": "high",
+  "status": "pending",
+  "created_at": "2026-03-31T08:00:00Z",
+  "updated_at": "2026-03-31T08:00:00Z"
+}
+```
+
+#### 2. List All Tasks
+
+```bash
+curl http://localhost:8000/api/v1/tasks
+```
+
+**Response (200 OK):**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "title": "Complete project documentation",
+      "due_date": "2026-04-15",
+      "priority": "high",
+      "status": "pending",
+      "created_at": "2026-03-31T08:00:00Z",
+      "updated_at": "2026-03-31T08:00:00Z"
+    }
+  ]
+}
+```
+
+#### 3. Filter Tasks by Status
+
+```bash
+curl "http://localhost:8000/api/v1/tasks?status=pending"
+```
+
+#### 4. Update Task Status
+
+```bash
+curl -X PATCH http://localhost:8000/api/v1/tasks/1/status \
+  -H "Content-Type: application/json" \
+  -d '{"status": "in_progress"}'
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": 1,
+  "title": "Complete project documentation",
+  "due_date": "2026-04-15",
+  "priority": "high",
+  "status": "in_progress",
+  "created_at": "2026-03-31T08:00:00Z",
+  "updated_at": "2026-03-31T10:30:00Z"
+}
+```
+
+#### 5. Get Daily Report
+
+```bash
+curl "http://localhost:8000/api/v1/tasks/report?date=2026-04-15"
+```
+
+**Response (200 OK):**
+```json
+{
+  "date": "2026-04-15",
+  "summary": {
+    "high": {
+      "pending": 2,
+      "in_progress": 1,
+      "done": 0
+    },
+    "medium": {
+      "pending": 1,
+      "in_progress": 0,
+      "done": 1
+    },
+    "low": {
+      "pending": 0,
+      "in_progress": 0,
+      "done": 0
+    }
+  }
+}
+```
+
+#### 6. Delete a Completed Task
+
+```bash
+curl -X DELETE http://localhost:8000/api/v1/tasks/1
+```
+
+**Response (204 No Content)** - Empty body on success.
+
+**Error Response (403 Forbidden):**
+```json
+{
+  "message": "Only completed tasks can be deleted"
+}
+```
+
+See [`Server/API_DOCUMENTATION.md`](Server/API_DOCUMENTATION.md) for complete API documentation.
 
 ### Running Tests
 
@@ -300,12 +424,106 @@ npm run lint
 
 ## Deployment
 
-The application can be deployed to various platforms:
+### Backend - Render (Docker)
 
-- **Backend**: Render (Docker), AWS, DigitalOcean
-- **Frontend**: Vercel, Netlify, or any static host
+Deploy the Laravel API using Render's free tier with Docker.
 
-See backend and frontend README files for detailed deployment instructions.
+**Prerequisites:**
+- [Aiven](https://aiven.io) account (free MySQL)
+- [Render](https://render.com) account (free tier)
+- GitHub repository with your code
+
+**Step 1: Aiven MySQL Setup**
+
+1. Go to [aiven.io](https://aiven.io) → Create service → **MySQL**
+2. Plan: **Startup-1 (Free)**
+3. Copy credentials: Host, Port, Database, Username, Password
+
+> **Note:** The Aiven CA certificate is pre-included at `Server/docker/mysql/aiven-ca.pem`. If you need to replace it with your own certificate, simply overwrite this file before deployment.
+
+**Step 2: Prepare Environment**
+
+Create `Server/.env.production`:
+
+```env
+APP_NAME="Task Management API"
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-app.onrender.com
+APP_KEY=base64:your_generated_key
+
+LOG_CHANNEL=stderr
+LOG_LEVEL=info
+
+DB_CONNECTION=mysql
+DB_HOST=your-aiven-host.aivencloud.com
+DB_PORT=your-port
+DB_DATABASE=defaultdb
+DB_USERNAME=avnadmin
+DB_PASSWORD=your-password
+DB_SSL_CA=/etc/ssl/certs/ca-certificates.crt
+MYSQL_ATTR_SSL_CA=/etc/ssl/certs/ca-certificates.crt
+
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync
+FILESYSTEM_DISK=local
+
+FRONTEND_URL=https://your-frontend-url.com
+```
+
+Generate `APP_KEY`:
+```bash
+cd Server
+php artisan key:generate --show
+```
+
+**Step 3: Deploy to Render**
+
+1. Go to [render.com](https://render.com) → **New +** → **Web Service**
+2. Connect your GitHub repository
+3. Configure:
+   - **Name**: `task-management-api`
+   - **Environment**: `Docker`
+   - **Root Directory**: `Server` (if in subfolder)
+   - **Dockerfile Path**: `./Dockerfile`
+4. Add all environment variables from `.env.production`
+5. Click **Create Web Service**
+
+Render will automatically build, run migrations, and start the container.
+
+**Verify Deployment:**
+- Health Check: `https://your-app.onrender.com/health` → `{"status":"ok"}`
+- API Test: `https://your-app.onrender.com/api/v1/tasks` → `{"data":[]}`
+
+---
+
+### Frontend - Vercel
+
+Deploy the Vue 3 frontend to Vercel's free tier.
+
+**Step 1: Prepare Frontend**
+
+Update `frontend/.env.production`:
+```env
+VITE_API_BASE_URL=https://your-render-app.onrender.com/api/v1
+```
+
+**Step 2: Deploy**
+
+1. Go to [vercel.com](https://vercel.com) → **Add New Project**
+2. Import your GitHub repository
+3. Configure:
+   - **Framework Preset**: `Vite`
+   - **Root Directory**: `frontend`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+4. Add Environment Variable: `VITE_API_BASE_URL`
+5. Click **Deploy**
+
+**Free Tier Limits:**
+- **Aiven**: 1GB MySQL (free forever)
+- **Render**: 750 hours/month (free forever, sleeps after idle)
+- **Vercel**: Unlimited bandwidth (free for personal projects)
 
 ## License
 
